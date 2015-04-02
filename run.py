@@ -49,8 +49,12 @@ class StockItemInfo(object):
             name_just = 16 + len(self.name)/len("涨") - 4
             stock_name = self.name
         else:
-            stock_name = get_stock_alpha_code(self.name)
-            name_just = 8
+            if "ST" not in self.name: 
+                stock_name = get_stock_alpha_code(self.name)
+                name_just = 8
+            else:
+                name_just = 12 + len(self.name)/len("涨") - 4
+                stock_name = self.name    
         
         return "\033[1;%s;40m%s\033[0m" % (color, \
             stock_name.ljust(name_just) + \

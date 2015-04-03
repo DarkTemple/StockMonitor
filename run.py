@@ -108,7 +108,7 @@ def refresh_stock_data():
     res_list = requests.get(request_url).text.split(";")
     if "\n" in res_list:
         res_list.remove("\n")
-    
+
     for res in res_list:
         stock = StockItemInfo()
         info_item_list = res.split("~")
@@ -120,12 +120,11 @@ def refresh_stock_data():
         stock_info_map.update({stock.code:stock})
         stock_info_list.append(stock)
     
-    g_show_main_flow = True
-    
     if g_show_main_flow or g_show_retail_flow:
         temp_list = map(lambda x:"ff_"+x, g_loc_stock_code_list)
         query_str = ",".join(temp_list)
-        request_url = "http://qt.gtimg.cn/q=ff_%s" % query_str
+        request_url = "http://qt.gtimg.cn/q=%s" % query_str
+        print request_url
         res_list = requests.get(request_url).text.split(";")
         if "\n" in res_list:
             res_list.remove("\n")

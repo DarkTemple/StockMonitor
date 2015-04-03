@@ -11,7 +11,8 @@ from optparse import OptionParser
 import requests
 import time
 import json
-from PinyinUtils import pinyin
+import pypinyin
+from pypinyin import pinyin, lazy_pinyin
 
 
 # 腾讯API http://blog.csdn.net/ustbhacker/article/details/8365756
@@ -20,8 +21,6 @@ from PinyinUtils import pinyin
 g_wanted_stock_file_name = "wanted_stock.txt"
 g_loc_stock_code_list = []
 
-g_pinyin_helper = pinyin.PinYin()
-g_pinyin_helper.load_word()
 g_show_chinese_name = False         # 中文股票名
 g_show_turnover = False             # 换手率
 g_show_main_flow = False            # 主力资金流入率
@@ -45,17 +44,17 @@ class StockItemInfo(object):
         else:
             color = "32"
 
-        if g_show_chinese_name:
+        if g_show_chinese_name:    
             name_just = 16 + len(self.name)/len("涨") - 4
+            if "*" in self.name:
+                name_just -= 1
+
             stock_name = self.name
         else:
-            if "ST" not in self.name: 
-                stock_name = get_stock_alpha_code(self.name)
-                name_just = 8
-            else:
-                name_just = 12 + len(self.name)/len("涨") - 4
-                stock_name = self.name    
-        
+            stock_name = get_stock_alpha_code(self.name)
+            name_just = 8
+    
+
         return "\033[1;%s;40m%s\033[0m" % (color, \
             stock_name.ljust(name_just) + \
             str(self.price.ljust(10)) + \
@@ -70,17 +69,22 @@ def format_loc_stock_code(stock_code):
     if len(stock_code) != 0:
         if stock_code[0] == "6":
             loc_stock_code = "sh" + stock_code
-        elif stock_code[0] in ["0", "3"]:
+        elif stock_code[0] in ["0", "3", "2"]:
             loc_stock_code = "sz" + stock_code
     
     return loc_stock_code
 
 
 def get_stock_alpha_code(hanzi):
-    result = g_pinyin_helper.hanzi2pinyin(hanzi)
+    full_width_A = u"\uff21"
+    full_width_Z = u"\uff3a"
+    result = lazy_pinyin(hanzi.decode("utf-8"), style=pypinyin.FIRST_LETTER)
     alpha_code = ""
     for pinyin in result:
-        alpha_code += pinyin[0]
+        if pinyin >= full_width_A and pinyin <= full_width_Z:
+            alpha_code += chr(ord("A") + ord(pinyin) - ord(full_width_A))
+        else:
+            alpha_code += pinyin
     
     return alpha_code
 
@@ -183,7 +187,7 @@ def run():
             print e 
             time.sleep(1)
         
-        time.sleep(3)
+        time.sleep(5)
 
 
 if __name__ == '__main__':

@@ -128,7 +128,6 @@ def refresh_stock_data():
         temp_list = map(lambda x:"ff_"+x, g_loc_stock_code_list)
         query_str = ",".join(temp_list)
         request_url = "http://qt.gtimg.cn/q=%s" % query_str
-        print request_url
         res_list = requests.get(request_url).text.split(";")
         if "\n" in res_list:
             res_list.remove("\n")

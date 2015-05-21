@@ -55,13 +55,20 @@ class StockItemInfo(object):
             name_just = 8
     
 
-        return "\033[1;%s;40m%s\033[0m" % (color, \
+        turnover_color = 33 # 黄色
+        main_flow_color = 35 # 紫红色
+        retail_flow_color = 44 # 蓝色
+
+        main_info_str = "\033[1;%s;40m%s\033[0m" % (color, \
             stock_name.ljust(name_just) + \
             str(self.price.ljust(10)) + \
-            str(self.increase.rjust(8))+"%(i)" + 
-            (str(self.turnover).rjust(10)+"%(t)" if g_show_turnover else "") + \
-            (str(self.main_flow_rate).rjust(10)+"%(m)" if g_show_main_flow else "") + \
-            (str(self.retail_flow_rate).rjust(10)+"%(r)" if g_show_retail_flow else ""))
+            str(self.increase.rjust(8))+"%(i)")
+
+        turnover_str = "\033[1;%s;40m%s\033[0m" % (turnover_color, (str(self.turnover).rjust(10)+"%(t)" if g_show_turnover else ""))
+        mainflow_str = "\033[1;%s;40m%s\033[0m" % (main_flow_color, (str(self.main_flow_rate).rjust(10)+"%(m)" if g_show_main_flow else ""))
+        retailflow_str = "\033[1;%s;40m%s\033[0m" % (retail_flow_color, (str(self.retail_flow_rate).rjust(10)+"%(r)" if g_show_retail_flow else ""))
+
+        return main_info_str + turnover_str + mainflow_str + retailflow_str
 
 
 def format_loc_stock_code(stock_code):

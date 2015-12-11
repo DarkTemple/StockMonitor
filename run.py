@@ -79,6 +79,9 @@ def format_loc_stock_code(stock_code):
         elif stock_code[0] in ["0", "3", "2"]:
             loc_stock_code = "sz" + stock_code
     
+    if stock_code == "000001":
+        return "sh000001"
+        
     return loc_stock_code
 
 
@@ -103,7 +106,7 @@ def read_wanted_stock(file_path):
             if "end" in line:
                 break
 
-            stock_code = line.strip()
+            stock_code = line.split("\t")[0].strip()
             loc_stock_code = format_loc_stock_code(stock_code)
             if len(loc_stock_code) > 0:
                 g_loc_stock_code_list.append(format_loc_stock_code(stock_code))
@@ -193,7 +196,7 @@ def run():
             print e 
             time.sleep(1)
         
-        time.sleep(5)
+        time.sleep(3)
 
 
 if __name__ == '__main__':
